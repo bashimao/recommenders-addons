@@ -71,9 +71,10 @@ class RocksDBTableOp : public OpKernel {
         };
 
     LookupInterface *table = nullptr;
-    OP_REQUIRES_OK(ctx,
-                   cinfo_.resource_manager()->LookupOrCreate<LookupInterface>(
-                       cinfo_.container(), cinfo_.name(), &table, creator));
+    OP_REQUIRES_OK(
+        ctx,
+        cinfo_.resource_manager()->template LookupOrCreate<LookupInterface>(
+            cinfo_.container(), cinfo_.name(), &table, creator));
     core::ScopedUnref unref_me(table);
 
     OP_REQUIRES_OK(ctx, CheckTableDataTypes(
@@ -82,7 +83,8 @@ class RocksDBTableOp : public OpKernel {
 
     if (ctx->expected_output_dtype(0) == DT_RESOURCE) {
       if (!table_handle_set_) {
-        auto h = table_handle_.AccessTensor(ctx)->scalar<ResourceHandle>();
+        auto h =
+            table_handle_.AccessTensor(ctx)->template scalar<ResourceHandle>();
         h() = MakeResourceHandle<LookupInterface>(ctx, cinfo_.container(),
                                                   cinfo_.name());
       }
@@ -102,7 +104,8 @@ class RocksDBTableOp : public OpKernel {
   ~RocksDBTableOp() override {
     if (table_handle_set_ && cinfo_.resource_is_private_to_kernel()) {
       if (!cinfo_.resource_manager()
-               ->Delete<LookupInterface>(cinfo_.container(), cinfo_.name())
+               ->template Delete<LookupInterface>(cinfo_.container(),
+                                                  cinfo_.name())
                .ok()) {
         // Took this over from other code, what should we do here?
       }

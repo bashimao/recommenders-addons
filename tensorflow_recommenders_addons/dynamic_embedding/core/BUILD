@@ -70,13 +70,14 @@ custom_op_library(
         "utils/utils.h",
         "utils/types.h",
     ],
-    deps = [
-        "@rocksdb//:rocksdb",
-    ],
+    copts = ["-Itensorflow_recommenders_addons/dynamic_embedding/core/lib/rocksdb/"],
+    deps = ["//tensorflow_recommenders_addons/dynamic_embedding/core/lib/rocksdb:rocksdb"],
     linkopts = [
+        "-L/usr/local/lib/",
         "-lbz2",
         "-llz4",
         "-lzstd",
+        "-lrocksdb",
     ],
 )
 
